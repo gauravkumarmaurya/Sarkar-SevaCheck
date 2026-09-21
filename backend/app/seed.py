@@ -20,7 +20,7 @@ def S(department, name, description, documents, processing_days, fee, status="DE
 
 SERVICES = [
     S("Panchayati Raj / Local Administration", "Birth Certificate", "DEMO DATA: Synthetic hackathon test amount. Not an official government fee.", "Birth record/hospital record where applicable; parent identity/address documents.", "Demo processing time", 120, office="Registrar of Births and Deaths"),
-    S("Revenue Department", "Caste Certificate", "Official Apuni Sarkar service record. Fee and timeline verified from the current official service page.", "Applicant photo; identity/address proof; land registry/Khatauni or residence-related document; Aadhaar; family register copy.", "Demo processing time", 120, status="DEMO_DATA", source_url=APUNI_MANUAL", office="Tehsildar / Revenue Office"),
+    S("Revenue Department", "Caste Certificate", "Official Apuni Sarkar service record. Fee and timeline verified from the current official service page.", "Applicant photo; identity/address proof; land registry/Khatauni or residence-related document; Aadhaar; family register copy.", "Demo processing time", 120, status="DEMO_DATA", source_url=APUNI_MANUAL, office="Tehsildar / Revenue Office"),
     S("Revenue Department", "Character Certificate", "DEMO DATA: Synthetic hackathon test amount. Not an official government fee.", "Applicant photo; identity proof; address/residence proof; other applicable documents.", "Demo processing time", 100, office="Revenue / Police Authority"),
     S("Panchayati Raj / Local Administration", "Death Certificate", "DEMO DATA: Synthetic hackathon test amount. Not an official government fee.", "Death record/hospital record where applicable; applicant identity/address documents.", "Demo processing time", 120, office="Registrar of Births and Deaths"),
     S("Registration Department", "Document Registration / Deed Registration", "DEMO DATA: Synthetic hackathon test amount. Not an official government fee.", "Identity proof; deed/document; property-related documents where applicable.", "Demo processing time", 500, office="Sub-Registrar Office"),
@@ -85,4 +85,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
