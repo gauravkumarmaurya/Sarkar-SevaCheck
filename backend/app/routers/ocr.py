@@ -3,7 +3,7 @@ import re
 from io import BytesIO
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile, Depends
-from PIL import Image, ImageOps, ImageEnhance
+from PIL import Image
 import pytesseract
 from sqlalchemy.orm import Session
 
@@ -34,7 +34,6 @@ def extract_amount(text: str) -> float | None:
         .replace("—", "-")
     )
 
-    # TOTAL AMOUNT patterns
     patterns = [
         r"TOTAL\s+AMOUNT\s+PAID[^\d]{0,50}([0-9]{1,7}(?:[,.][0-9]{1,2})?)",
         r"TOTAL\s+PAYMENT[^\d]{0,50}([0-9]{1,7}(?:[,.][0-9]{1,2})?)",
@@ -45,11 +44,7 @@ def extract_amount(text: str) -> float | None:
     ]
 
     for pattern in patterns:
-        match = re.search(
-            pattern,
-            clean,
-            flags=re.IGNORECASE | re.DOTALL
-        )
+        match = re.search(pattern, clean, flags=re.IGNORECASE | re.DOTALL)
 
         if match:
             try:
@@ -57,7 +52,6 @@ def extract_amount(text: str) -> float | None:
             except ValueError:
                 pass
 
-    # Currency fallback
     currency_pattern = (
         r"(?:RS\.?|INR|RUPEES)\s*"
         r"([0-9]{1,7}(?:[,.][0-9]{1,2})?)"
@@ -100,42 +94,21 @@ async def receipt_ocr(
     try:
         image = Image.open(BytesIO(raw)).convert("RGB")
 
-        # First try normal OCR
+        # FAST OCR:
+        # Large images make Tesseract extremely slow on Render.
+        max_width = 1400
+
+        if image.width > max_width:
+            scale = max_width / image.width
+            image = image.resize(
+                (max_width, max(1, int(image.height * scale)))
+            )
+
+        # One OCR pass only
         text = pytesseract.image_to_string(
             image,
             config="--psm 6"
         )
-
-        # If OCR text is too short, use enhanced image
-        if len(text.strip()) < 20:
-            gray = ImageOps.grayscale(image)
-            gray = ImageEnhance.Contrast(gray).enhance(2.0)
-
-            width, height = gray.size
-
-            if width < 1200:
-                scale = 1200 / width
-                gray = gray.resize(
-                    (1200, int(height * scale))
-                )
-
-            enhanced_text = pytesseract.image_to_string(
-                gray,
-                config="--psm 6"
-            )
-
-            if len(enhanced_text.strip()) > len(text.strip()):
-                text = enhanced_text
-
-        # Final fallback OCR mode
-        if len(text.strip()) < 20:
-            extra_text = pytesseract.image_to_string(
-                image,
-                config="--psm 11"
-            )
-
-            if len(extra_text.strip()) > len(text.strip()):
-                text = extra_text
 
     except Exception as exc:
         raise HTTPException(
