@@ -1,8 +1,11 @@
-import os
+﻿import os
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles
+from fastapi.staticfiles import StaticFiles
 from .database import Base, engine
 from .routers import admin, auth, ocr, reports, services
 
@@ -23,6 +26,15 @@ app.include_router(admin.router, prefix="/api")
 app.include_router(ocr.router, prefix="/api")
 app.include_router(reports.router, prefix="/api")
 
+FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
+
+FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
+
+FRONTEND_DIST = Path(__file__).resolve().parents[2] / "frontend" / "dist"
+app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")
+
 
 @app.get("/health")
 def health():
@@ -35,3 +47,6 @@ def root():
     if index.exists():
         return FileResponse(index)
     return {"name": "Sarkar SevaCheck API", "docs": "/docs", "health": "/health"}
+
+
+
